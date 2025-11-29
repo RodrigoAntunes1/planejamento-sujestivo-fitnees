@@ -1,12 +1,20 @@
 import { GoogleGenAI } from "@google/genai";
 import { ClientData } from '../types';
 
-// NOTE: In a real production app, never expose API keys in frontend code.
-// Since this is a generated demo running in a controlled environment, we use process.env.API_KEY.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// Safe access to API Key to prevent "process is not defined" errors in browser-only environments
+const getApiKey = () => {
+  try {
+    return process.env.API_KEY || '';
+  } catch (e) {
+    return '';
+  }
+};
+
+const apiKey = getApiKey();
+const ai = new GoogleGenAI({ apiKey });
 
 export const generatePlanSuggestion = async (client: ClientData): Promise<string> => {
-  if (!process.env.API_KEY) {
+  if (!apiKey) {
     return "API Key não configurada. Não é possível gerar sugestão.";
   }
 

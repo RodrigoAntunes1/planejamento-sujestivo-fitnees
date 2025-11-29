@@ -2,12 +2,20 @@ import { ClientData } from '../types';
 
 const STORAGE_KEY = 'team_antunes_clients';
 
+// Helper to generate ID safely in any environment (secure or non-secure)
+const generateId = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+};
+
 export const saveClientData = (data: Omit<ClientData, 'id' | 'submissionDate' | 'paymentStatus'>): ClientData => {
   const currentData = getClients();
   
   const newClient: ClientData = {
     ...data,
-    id: crypto.randomUUID(),
+    id: generateId(),
     submissionDate: new Date().toISOString(),
     paymentStatus: 'pending_verification'
   };
